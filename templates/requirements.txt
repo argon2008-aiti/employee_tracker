@@ -1,0 +1,13 @@
+Django==1.6
+South==1.0.2
+argparse==1.2.1
+dj-database-url==0.3.0
+dj-static==0.0.6
+django-geojson==2.8.0
+django-leaflet==0.16.0
+djangoajax==2.2.15
+gunicorn==19.3.0
+psycopg2==2.6
+six==1.9.0
+static3==0.5.1
+wsgiref==0.1.2
