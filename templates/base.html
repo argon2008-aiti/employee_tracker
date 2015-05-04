@@ -8,6 +8,7 @@
 	<link rel="stylesheet" type="text/css" href={% static "assets/css/bootstrap.min.css"%}>
         <link rel="stylesheet" type="text/css" href={% static "assets/css/main.css"%}>
         <link rel="stylesheet" type="text/css" href={% static "assets/fonts/font-awesome-4.2.0/css/font-awesome.min.css"%}>
+        <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
 	   
 </head>
 <body>
@@ -54,9 +55,7 @@
 
 {% endblock%}
 {% block contents %}
-{% for client in clients %}
- hello
-{% endfor %}
+<div id="map"></div>
 {% endblock %}
 {% block footer%}
 <div class=banner id=footer>
@@ -70,6 +69,7 @@
     </div>
        <script type="text/javascript" src = {% static "assets/js/jquery-1.11.1.js"%}></script>
        <script type="text/javascript" src = {% static "assets/js/bootstrap.min.js"%}></script>
+       <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 
        <script>
 	$(document).ready(function(){
@@ -99,6 +99,11 @@
 		})
 		$(function(){
 			setNavigation();	
+			accessToken = 'pk.eyJ1IjoieXVuZ3V0YSIsImEiOiJILVdtQ1pRIn0.FmyLN0Igsi5NGFQqWu4oWg';
+			var map = L.map('map').setView([51.505, -0.09], 13);
+			L.tileLayer('http://{s}.tiles.mapbox.com/v4/yunguta.m3987de7/{z}/{x}/{y}.png?access_token=' + accessToken, {
+			attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>',
+			     maxZoom: 17}).addTo(map);
 			})
 
 		$(window).scroll(function(){
