@@ -197,18 +197,19 @@ body {
     font-size: 2.7em;
     font-family: open-sans;
     color: white;
-    margin-top: 2px;
+    margin-top: -10px;
 }
 
 #login-title{
     margin-top: -32px;
     padding-left: 0px;
-    margin-left: 130px;
+    margin-left: 100px;
+    font-size:   2em;
 }
 
 #login-subtitle {
-    font-size: 2em;
-    margin-left: 160px;
+    font-size: 1.7em;
+    margin-left: 200px;
     margin-top: 10px;
     padding-top: 0px;
 
@@ -351,7 +352,7 @@ h4{
 }
 
 .subtitle {
-    margin-top: 83px; 
+    margin-top: 80px; 
     margin-left: 259px;
     font-size: 20px;
     position: absolute;

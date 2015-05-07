@@ -91,6 +91,8 @@ STATICFILES_DIRS = (
 # base url at which static files are served
 STATIC_URL = '/static/'
 
+LOGIN_URL  = '/login'
+
 
 STATICFILES_FINDERS = (
             'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -104,28 +106,31 @@ TEMPLATE_LOADERS = (
        'django.template.loaders.eggs.Loader',
         )
 
-
 # Template files (html+django templates)
 TEMPLATE_DIRS = (
         os.path.join(BASE_DIR, "templates"),
         )
-#parse database configuration from $DATABASE_URL
-import dj_database_url
-DATABASES['default'] =  dj_database_url.config()
 
-# Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Production code
+if DEBUG==False:
 
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
+    #parse database configuration from $DATABASE_URL
+    import dj_database_url
+    DATABASES['default'] =  dj_database_url.config()
 
-# Static asset configuration
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = 'staticfiles'
-STATIC_URL = '/static/'
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-STATICFILES_DIRS = (
-            os.path.join(BASE_DIR, 'static'),
-            )
+    # Allow all host headers
+    ALLOWED_HOSTS = ['*']
+
+    # Static asset configuration
+    import os
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    STATIC_ROOT = 'staticfiles'
+    STATIC_URL = '/static/'
+
+    STATICFILES_DIRS = (
+                os.path.join(BASE_DIR, 'static'),
+                )
 

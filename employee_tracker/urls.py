@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^monitor/', 'monitor.views.monitor', name='monitor'),
+    url(r'^login/', 'monitor.views.login', name='login'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

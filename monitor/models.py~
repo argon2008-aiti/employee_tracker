@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class GPS_Device(models.Model):
+class GPS-Device(models.Model):
     identification_number = models.CharField(max_length=20)
     location_LAT          = models.CharField(max_length=20)
     location_LON          = models.CharField(max_length=20)
@@ -20,7 +20,7 @@ class Employee(models.Model):
     def __unicode__(self):
         return self.first_name + " " + self.last_name
 
-class Safety_Manager(models.Model):
+class Safety-Manager(models.Model):
     user = models.OneToOneField(User)
 
     def __unicode__(self):
