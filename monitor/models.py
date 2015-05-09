@@ -18,7 +18,7 @@ DEPARTMENTS = [
        (12, "December") 
         ]
 
-class GPS_Device(models.Model):
+class GpsDevice(models.Model):
     identification_number = models.CharField(max_length=20)
     location              = PointField(null=True)
     status                = models.BooleanField(default=False)
@@ -34,13 +34,13 @@ class Employee(models.Model):
     role                  = models.CharField(max_length=25, null=True)
     department		  = models.IntegerField(choices=DEPARTMENTS, null=True)
     phone                 = models.CharField(max_length=15)
-    location_device       = models.ForeignKey(GPS_Device, null=True)
+    location_device       = models.ForeignKey(GpsDevice, null=True)
      
     def __unicode__(self):
         return self.first_name + " " + self.last_name
 
 
-class Safety_Manager(models.Model):
+class SafetyManager(models.Model):
     user     = models.OneToOneField(User)
     employee = models.ForeignKey(Employee, null=True)
 
@@ -49,7 +49,7 @@ class Safety_Manager(models.Model):
 
 
 class Alert(models.Model):
-    device         = models.ForeignKey(GPS_Device)
+    device         = models.ForeignKey(GpsDevice)
     alert_date     = models.DateTimeField()
     acknowledged   = models.BooleanField(default=False)
 
