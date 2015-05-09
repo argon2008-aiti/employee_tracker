@@ -61,30 +61,46 @@
 <div class=client_container>
 	<div class=row>
 		<div class=col-sm-6>
-			{% for employee in employees_odd %}
+			{% for client in clients_odd %}
+			<a class=client-link href="clients/details/{{client.id}}">
 			<div class="client-list">	
+				{% ifequal client.client_type 2 %}
+				<div class=list-image-container>
+					<i class="fa fa-home"></i> 	
+				</div>
+				{% else %}
 				<div class=list-image-container>
 					<i class="fa fa-dollar"></i> 	
 				</div>
-				<p class=client-name>{{employee.firstname}}</p>
-				<p class=client-address>current location {{client.address}}</p>
-				<p class=cylinder-count>device count: {{client.cylinder_set.count}}</p>
-				<p class=date-added> added on: {{client.date_added}}</p>
-
-			</div>
-				{% endfor %}
-		</div>
-		<div class=col-sm-6>
-			{%for employee in employees_even%}
-			<div class="client-list">
-				<div class=list-image-container>
-					<i class="fa fa-dollar"></i> 	
-				</div>
-				<p class=client-name>{{employee.firstname}}</p>
+				{% endifequal %}
+				<div class="highlight-rib"></div>
+				<p class=client-name>{{client.name}}</p>
 				<p class=client-address>located at {{client.address}}</p>
 				<p class=cylinder-count>device count: {{client.cylinder_set.count}}</p>
 				<p class=date-added> added on: {{client.date_added}}</p>
-			</div>
+
+			</div></a>
+				{% endfor %}
+		</div>
+		<div class=col-sm-6>
+			{%for client in clients_even%}
+			<a class=client-link href="clients/details/{{client.id}}">
+			<div class="client-list">
+				{% ifequal client.client_type 2 %}
+				<div class=list-image-container>
+					<i class="fa fa-home"></i> 	
+				</div>
+				{% else %}
+				<div class=list-image-container>
+					<i class="fa fa-dollar"></i> 	
+				</div>
+				{% endifequal %}
+				<div class="highlight-rib"></div>
+				<p class=client-name>{{client.name}}</p>
+				<p class=client-address>located at {{client.address}}</p>
+				<p class=cylinder-count>device count: {{client.cylinder_set.count}}</p>
+				<p class=date-added> added on: {{client.date_added}}</p>
+			</div></a>
 			{% endfor %}
 	</div>
 	</div>

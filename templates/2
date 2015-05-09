@@ -67,11 +67,11 @@
 					<i class="fa fa-dollar"></i> 	
 				</div>
 				<p class=client-name>{{employee.firstname}}</p>
-				<p class=client-address>current location {{client.address}}</p>
+				<p class=client-address>located at {{client.address}}</p>
 				<p class=cylinder-count>device count: {{client.cylinder_set.count}}</p>
 				<p class=date-added> added on: {{client.date_added}}</p>
 
-			</div>
+			</div></a>
 				{% endfor %}
 		</div>
 		<div class=col-sm-6>
