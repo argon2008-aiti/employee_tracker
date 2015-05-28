@@ -7,6 +7,7 @@
 	<title>Volta Aluminium Company </title>
 	<link rel="stylesheet" type="text/css" href={% static "assets/css/bootstrap.min.css"%}>
         <link rel="stylesheet" type="text/css" href={% static "assets/css/main.css"%}>
+        <link rel="stylesheet" type="text/css" href={% static "assets/css/leaflet.vector-markers.css"%}>
         <link rel="stylesheet" type="text/css" href={% static "assets/fonts/font-awesome-4.2.0/css/font-awesome.min.css"%}>
         <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
 	   
@@ -64,12 +65,13 @@
 			{% for employee in employees_odd %}
 			<div class="client-list">	
 				<div class=list-image-container>
-					<i class="fa fa-dollar"></i> 	
+					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=90px height=80px> </img>
 				</div>
-				<p class=client-name>{{employee.firstname}}</p>
-				<p class=client-address>current location {{client.address}}</p>
-				<p class=cylinder-count>device count: {{client.cylinder_set.count}}</p>
-				<p class=date-added> added on: {{client.date_added}}</p>
+				<p class=client-id>{{employee.id}}</p>
+				<p class=client-name>{{employee.first_name}}  {{employee.last_name}}</p>
+				<p class=client-address>current location: {{employee.current_location}}</p>
+				<p class=cylinder-count> Department: {{employee.get_department_display|truncatechars:20}}</p>
+				<p class=date-added>{{employee.location_device.status_str}}</p>
 
 			</div>
 				{% endfor %}
@@ -78,12 +80,13 @@
 			{%for employee in employees_even%}
 			<div class="client-list">
 				<div class=list-image-container>
-					<i class="fa fa-dollar"></i> 	
+					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=90px height=80px> </img>
 				</div>
-				<p class=client-name>{{employee.firstname}}</p>
-				<p class=client-address>located at {{client.address}}</p>
-				<p class=cylinder-count>device count: {{client.cylinder_set.count}}</p>
-				<p class=date-added> added on: {{client.date_added}}</p>
+				<p class=client-id>{{employee.id}}</p>
+				<p class=client-name>{{employee.first_name}}  {{employee.last_name}}</p>
+				<p class=client-address>current location: {{employee.current_location}}</p>
+				<p class=cylinder-count> Department: {{employee.get_department_display|truncatechars:20}}</p>
+				<p class=date-added>{{employee.location_device.status_str}}</p>
 			</div>
 			{% endfor %}
 	</div>
@@ -103,6 +106,7 @@
        <script type="text/javascript" src = {% static "assets/js/bootstrap.min.js"%}></script>
        <script type="text/javascript" src = {% static "assets/js/overlay.geojson"%}></script>
        <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+       <script type="text/javascript" src = {% static "assets/js/leaflet.vector-markers.js"%}></script>
 
        <script>
 	$(document).ready(function(){
@@ -116,10 +120,9 @@
 		var index_old = 0;
 			 $(".list-image-container").each(function(){
 				var index =  Math.floor(Math.random()*15);
-				if((counter != 0) && (index_old==index)){
-					while(index_old==index){
+				if((counter != 0) && (index_old===index)){
+					while(index_old===index){
 					    index = Math.floor(Math.random()*15);
-					    console.log("same")
 					}	
 				}	
 				$(this).css("background-color", colors[index]) 
@@ -130,14 +133,20 @@
 
 				 
 		})
+
+			$(".client-id").each(function(){
+					$(this).hide();
+				})
+                var map;
 		$(function(){
 			setNavigation();	
 			accessToken = 'pk.eyJ1IjoieXVuZ3V0YSIsImEiOiJILVdtQ1pRIn0.FmyLN0Igsi5NGFQqWu4oWg';
-			var map = L.map('map').setView([5.667, 0.019], 13);
+			map = L.map('map').setView([5.667, 0.019], 17);
+			//L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:17}).addTo(map);
 			L.tileLayer('http://{s}.tiles.mapbox.com/v4/yunguta.m3987de7/{z}/{x}/{y}.png?access_token=' + accessToken, {
 			attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>',
 			     maxZoom: 17}).addTo(map);
-			L.geoJson(overlay).addTo(map);
+
 			})
 
 		$(window).scroll(function(){
@@ -148,7 +157,7 @@
 			    $(".nav-bar").removeClass('fixed')
 			}
                         })
-		
+
 
 		 $(".client-list").hover(
 			 function(){
@@ -190,6 +199,9 @@
 				        }
 				 
 				 )
+		 $(function(){
+		     place_markers();  
+		 })
 
 		 function setNavigation(){
 			 var path = window.location.pathname;
@@ -203,6 +215,110 @@
 					}
 					 })
 		 }
+                 
+		var onlineMarker = L.VectorMarkers.icon({
+			icon: 'spinner',	
+			markerColor: '#2880CA',
+			spin:	true
+		}); 
+
+
+		var offlineMarker = L.VectorMarkers.icon({
+			icon: 'circle',	
+			markerColor: '#C4C4C4',
+		}); 
+		
+		var alarmMarker = L.VectorMarkers.icon({
+			icon: 'spinner',	
+			markerColor: 'red',
+			spin:	true
+		}); 
+		var marker_array = [];
+		
+		function place_markers() {
+			$.get("/fetch/", function(data, status){
+				input = data.content;	
+				var marker_icon;
+				for(var i=0;i<input.length;i++){
+					if(input[i].status==='ONLINE'){
+					    marker_icon = onlineMarker;	
+					}
+					else{
+					    marker_icon = offlineMarker;	
+					}
+
+					var url;
+					$(".client-id").each(function(){
+							if(input[i].employee===parseInt($(this).html())){
+							    url = $(this).siblings(".list-image-container").children("img").attr('src');
+							    name = $(this).siblings(".client-name").html();
+							}
+						});
+
+					var popup  = "<img class=pop-pic src=" + url + " width=40 height=40/> <p class=pop-text>"+name+"</p>";
+				var marker = L.marker([input[i].coordinates[1], input[i].coordinates[0]], 
+					        {icon: marker_icon},
+					        {title: 'Hover'})
+						.bindPopup(popup)
+						.addTo(map);
+			            var obj = {
+				               'key': input[i].pk, 
+					       'status': input[i].status,
+					       'marker': marker,
+				    };	
+				
+				    marker_array.push(obj);
+				}
+					}, 'json');
+
+
+		}
+		setInterval(function(){
+				$.get("/fetch/", function(data, status){
+					input = data.content;
+					var marker_icon;
+					for(var i =0; i < input.length; i++) {
+						for(var j=0; j<input.length; j++) {
+						        // we have found our marker
+							if(marker_array[j].key===input[i].pk) {
+								if(input[i].status==='ONLINE'){
+								    marker_icon = onlineMarker;	
+								    if(input[i].alarm){
+								        marker_icon = alarmMarker; 
+								    }
+								}
+
+								else if(input[i].status==='OFFLINE'){
+								    marker_icon = offlineMarker;	
+								}
+								
+						            marker_array[j].marker.setLatLng([input[i].coordinates[1], input[i].coordinates[0]])
+							    .setIcon(marker_icon)
+							    .update();	
+							}
+						}	
+
+					$(".client-id").each(function(){
+							if(input[i].employee===parseInt($(this).html())){
+							    var obj = $(this).siblings(".date-added");
+						            obj.html(input[i].status);	
+							    if(obj.html()==='OFFLINE'){
+							        obj.removeClass("online"); 
+							        obj.addClass("offline"); 
+							    }	
+							    else {
+							        obj.removeClass("offline"); 
+							        obj.addClass("online"); 
+
+							    }
+							    
+							}
+							
+							});
+					}
+					},'json');
+		
+		}, 6000)
 
        </script>
 </body>

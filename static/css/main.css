@@ -445,6 +445,16 @@ login-form{
     position: relative;
 }
 
+.pop-pic {
+    float: left;
+    margin-left: -15px;
+}
+
+.pop-text {
+    padding-left: 30px;
+    padding-top:  10px;
+}
+
 .highlight-rib {
     width: 5px;
     height: 90px;
@@ -548,13 +558,20 @@ login-form{
 .cylinder-count  {
 }
 
-.date-added {
+.date-added  {
     position: absolute;
     margin-top: -30px;
-    padding-left: 200px;
+    padding-left: 300px;
     font-style: italic;
-    color: #555;
     font-family: open-sans;
+}
+
+.offline {
+    color: #555;
+}
+
+.online {
+    color: #3498DB;
 }
 
 .fa-home {
@@ -564,11 +581,10 @@ login-form{
     position: absolute;
 }
 
-.fa-dollar {
-    margin-left: 28px;
-    margin-top: 10px;
-    color: white;
-    position: absolute;
+.profile-pic {
+    margin-left: 0px;
+    margin-top: 0px;
+    float: left
 }
 
 

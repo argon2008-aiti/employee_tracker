@@ -1,15 +1,64 @@
 from django.shortcuts import render, render_to_response, redirect, RequestContext
-from datetime import datetime
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django_ajax.decorators import ajax
 import django.contrib.auth as auth
+from models import *
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from serializers import GpsDeviceSerializer
+import datetime
 
-# Create your views here.
 
 @login_required
 def monitor(request):
-    now      = datetime.now()
+    now      = datetime.datetime.now()
     username = request.user.get_full_name()
+
+    employees = Employee.objects.all()
+
+    employees_even = [ employee for employee in employees 
+	            if employee.id%2==0 
+	    ]
+
+    employees_odd =  [ employee for employee in employees 
+	            if employee.id%2!=0 
+	    ]
+
     return render_to_response('base.html', locals())
+
+@csrf_exempt
+def mobile(request):
+    if request.method == 'POST':
+        key   = request.POST.get('key')
+        lon   = request.POST.get('lon')
+        lat   = request.POST.get('lat')
+        alarm = request.POST.get('alarm')
+
+        # look for device which sent request
+        target_device = GpsDevice.objects.get(identification_number=key) 
+        target_device.location = {'type':'Point', 'coordinates': [lon, lat]}
+        
+        # condition the alarm variable
+        if(alarm=="true"):
+            alarm = True
+        else:
+            alarm = False
+        target_device.alarm    = alarm
+        target_device.save()
+    else:
+        return
+    
+# ajax request 
+@ajax
+def fetch(request):
+    devices = GpsDevice.objects.all()
+    entries = []
+    for device in devices:
+        entries.append(dict({'pk': device.pk, 'coordinates': device.location['coordinates'], \
+                'status': device.status_str(), 'employee': device.employee.pk, 'alarm': device.alarm}))
+    return entries 
 
 # to log in a user
 def login(request):
@@ -36,3 +85,10 @@ def login(request):
 # to log out a user
 def log_user_out(request):
     request.user.logout()
+
+
+class JSONResponse(HttpResponse):
+    def __init__(self, data, **kwargs):
+        content   = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json; charset=utf-8'
+        super(JSONResponse, self).__init__(content, **kwargs)
