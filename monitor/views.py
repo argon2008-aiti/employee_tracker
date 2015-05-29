@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django_ajax.decorators import ajax
 import django.contrib.auth as auth
-from rest_framework.renderers import JSONRenderer
 import datetime
 
 
@@ -47,7 +46,7 @@ def mobile(request):
     else:
         return
     
-# ajax request 
+#ajax request 
 @ajax
 def fetch(request):
     devices = GpsDevice.objects.all()
