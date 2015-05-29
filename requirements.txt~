@@ -1,5 +1,5 @@
 Django==1.6
-http://effbot.org/media/downloads/Imaging-1.1.7.tar.gz
+PIL==1.1.7
 South==1.0.2
 argparse==1.2.1
 decorator==3.4.2
