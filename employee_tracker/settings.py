@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'monitor',
     'leaflet',
     'djgeojson',
+    'django_ajax',
 )
 
 MIDDLEWARE_CLASSES = (

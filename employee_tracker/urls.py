@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^login/', 'monitor.views.login', name='login'),
     url(r'^mobile-request/', 'monitor.views.mobile', name='mobile'),
     url(r'^fetch/', 'monitor.views.fetch', name='fetch'),
+    url(r'^ajax/', include('ajax.urls')),
 )
 
 urlpatterns += staticfiles_urlpatterns()
