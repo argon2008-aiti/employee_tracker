@@ -37,11 +37,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
-    'django_ajax',
     'monitor',
     'leaflet',
     'djgeojson',
-    'ajax',
 )
 
 MIDDLEWARE_CLASSES = (
