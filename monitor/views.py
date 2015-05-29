@@ -2,7 +2,7 @@ from django.shortcuts import render, render_to_response, redirect, RequestContex
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django_ajax.decorators import ajax
+#from django_ajax.decorators import ajax
 import django.contrib.auth as auth
 import datetime
 
@@ -47,7 +47,7 @@ def mobile(request):
         return
     
 #ajax request 
-@ajax
+#@ajax
 def fetch(request):
     devices = GpsDevice.objects.all()
     entries = []
