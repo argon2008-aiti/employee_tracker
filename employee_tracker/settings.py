@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     'leaflet',
     'djgeojson',
     'ajax',
-    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -4,10 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django_ajax.decorators import ajax
 import django.contrib.auth as auth
-from models import *
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from serializers import GpsDeviceSerializer
 import datetime
 
 
@@ -86,9 +83,3 @@ def login(request):
 def log_user_out(request):
     request.user.logout()
 
-
-class JSONResponse(HttpResponse):
-    def __init__(self, data, **kwargs):
-        content   = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json; charset=utf-8'
-        super(JSONResponse, self).__init__(content, **kwargs)
