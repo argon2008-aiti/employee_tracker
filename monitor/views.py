@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import django.contrib.auth as auth
 import datetime
+from models import *
 
 
 @login_required
