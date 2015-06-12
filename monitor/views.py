@@ -25,13 +25,13 @@ def monitor(request):
 
     return render_to_response('base.html', locals())
 
-@csrf_exempt
 def mobile(request):
     if request.method == 'POST':
-        key   = request.POST.get('key')
-        lon   = request.POST.get('lon')
-        lat   = request.POST.get('lat')
-        alarm = request.POST.get('alarm')
+        key   = request.POST.get('key', '')
+        lon   = request.POST.get('lon', '')
+        lat   = request.POST.get('lat', '')
+        alarm = request.POST.get('alarm', '')
+        print request.POST 
 
         # look for device which sent request
         target_device = GpsDevice.objects.get(identification_number=key) 
