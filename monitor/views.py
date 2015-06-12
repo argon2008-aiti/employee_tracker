@@ -35,7 +35,7 @@ def mobile(request):
 
         # look for device which sent request
         target_device = GpsDevice.objects.get(identification_number=key) 
-        target_device.location = {'type':'Point', 'coordinates': [lon, lat]}
+        target_device.location = {'type':'Point', 'coordinates': [float(lon), float(lat)]}
         
         # condition the alarm variable
         if(alarm=="true"):
