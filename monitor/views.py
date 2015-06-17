@@ -57,6 +57,17 @@ def fetch(request):
                 'status': device.status_str(), 'employee': device.employee.pk, 'alarm': device.alarm}))
     return entries 
 
+@ajax
+def query(request):
+    employees = Employee.objects.all()
+    entries = []
+    for employee in employees:
+        entries.append(dict({'name': employee.first_name + " "+ employee.last_name, \
+                'department': employee.get_department_display(), 'avatar': employee.avatar.url}))
+    print entries
+    return entries
+     
+
 # to log in a user
 def login(request):
     username = request.POST.get('username', '')
@@ -80,6 +91,6 @@ def login(request):
 
 
 # to log out a user
-def log_user_out(request):
+def logout(request):
     request.user.logout()
 

@@ -1,8 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 from djgeojson.fields import PointField
 import datetime
-
+from django.db.models import signals
+import os
+import shutil
 
 DEPARTMENTS = [
        (1, "ADMINISTRATION"), 
@@ -45,16 +48,16 @@ class Employee(models.Model):
     department		  = models.IntegerField(choices=DEPARTMENTS, null=True)
     phone                 = models.CharField(max_length=15)
     location_device       = models.OneToOneField(GpsDevice, null=True)
-    avatar                = models.ImageField(upload_to='static/profile', blank=True, default='assets/profile/default.png')
+    avatar                = models.ImageField(upload_to='assets/profile', blank=True, default='assets/profile/default.png')
      
     def __unicode__(self):
         return self.first_name + " " + self.last_name
 
     def current_location(self):
-        dec_lon = self.location_device.location.get("coordinates")[0]
-        dec_lat = self.location_device.location.get("coordinates")[1]
+        dec_lon = float(self.location_device.location.get("coordinates")[0])
+        dec_lat = float(self.location_device.location.get("coordinates")[1])
         return self.decimalDegrees2DMS(dec_lon, "Longitude") + ", " + self.decimalDegrees2DMS(dec_lat, "Latitude")
-
+    
     def decimalDegrees2DMS(self,value,type):
         """
         Converts a Decimal Degree Value into
@@ -106,4 +109,13 @@ class Alert(models.Model):
     def __unicode__(self):
         return self.device.identification_number
 
+def save_image(sender, instance, created, **kwargs):
+    target_dir  = os.path.join(settings.BASE_DIR, "static/profile")
+    from_dir    = os.path.join(settings.BASE_DIR, instance.avatar.url)
+    filename    = os.path.basename(from_dir)
+    shutil.copy2(from_dir, os.path.join(target_dir, filename))
+    print "object saved or modified", instance.avatar.url
+    print "image copied to", os.path.join(target_dir, filename)
+
+signals.post_save.connect(save_image, sender=Employee)
 

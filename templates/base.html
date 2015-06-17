@@ -23,13 +23,20 @@
 		<div class="title"><em>Volta Aluminium Company</em></div>
 		<div class="subtitle">Staff Location and Safety Monitoring System</div>
 		<div class="user" id="banner-user">
-			<i class="fa fa-user pull-right" ></i>
+			<a href=#><i class="fa fa-user pull-right" ></i></a>
 		</div>
 		<div class=username id=banner_username>
 			<p class=username_text>{{username|title}}</p>
 		</div>
 		<div class="options" id="banner-options">
-	                <i class="fa fa-gear pull-right"></i>
+		       <i class="fa fa-gear pull-right" id=gear></i>
+		</div>
+		<div class="options-dropdown">
+	            <ul id=options-menu class=shadow>
+			    <li class="menu-item"> <a href=#>Account</a></li>
+			    <hr class=divider id=menu-divider>
+			    <li class="menu-item"> <a href="/logout">Log Out</a></li>
+		    </ul>
 		</div>
 		<div class=day>
 			<h2>{{now.day}}</h2>
@@ -46,10 +53,10 @@
 	    <hr class=divider id=banner-divider>
             <ul class="nav-list">
 		    <li class="list-item"><a href="/monitor">Monitor</a></li>
-		    <li class="list-item"><a href="/clients">Logs</a></li>
+		    <li class="list-item"><a href="/logs">Logs</a></li>
 	    </ul>
 	    <form class=search-box>
-	           <input class=search-lineedit type="text" placeholder="Search..." required> 
+	           <input class="search-lineedit" type="text" name="search-box" placeholder="Search..." required> 
 	           <input type="submit" value="Search" class=search-button> 
 	    </form>
         </div>
@@ -65,7 +72,7 @@
 			{% for employee in employees_odd %}
 			<div class="client-list">	
 				<div class=list-image-container>
-					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=90px height=80px> </img>
+					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=80px height=80px> </img>
 				</div>
 				<p class=client-id>{{employee.id}}</p>
 				<p class=client-name>{{employee.first_name}}  {{employee.last_name}}</p>
@@ -80,7 +87,7 @@
 			{%for employee in employees_even%}
 			<div class="client-list">
 				<div class=list-image-container>
-					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=90px height=80px> </img>
+					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=80px height=80px> </img>
 				</div>
 				<p class=client-id>{{employee.id}}</p>
 				<p class=client-name>{{employee.first_name}}  {{employee.last_name}}</p>
@@ -106,16 +113,18 @@
        <script type="text/javascript" src = {% static "assets/js/bootstrap.min.js"%}></script>
        <script type="text/javascript" src = {% static "assets/js/overlay.geojson"%}></script>
        <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+       <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/hogan.js/2.0.0/hogan.js"></script>
        <script type="text/javascript" src = {% static "assets/js/leaflet.vector-markers.js"%}></script>
+       <script type="text/javascript" src = {% static "assets/js/typeahead.bundle.js"%}></script>
 
        <script>
 	$(document).ready(function(){
 		$(".alert-list").children(".highlight-rib").hide();
-		
+		$(".options-dropdown").hide();
 		var colors = ['#99B433', '#00A300', '#1E7145', '#FF0097', '#9F00A7',
 			  '#7E3878', '#603CBA', '#00ABA9', '#2D89EF', '#2B5797',
 			  '#FFC40D', '#E3A21A', '#DA532C', '#EE1111', '#B91D47',
-			 ]
+			 ];
 	        var counter = 0;
 		var index_old = 0;
 			 $(".list-image-container").each(function(){
@@ -129,14 +138,54 @@
 				$(this).siblings(".highlight-rib").css("background-color", colors[index]).hide();
 				index_old = index;
 				counter++;
-				} )
+				});
 
+			var temp = Hogan.compile(
+					'<p>{{name}}</p>'
+					); 
+
+                        var numbers = new Bloodhound({
+		            datumTokenizer: function(d){
+			            return Bloodhound.tokenizers.whitespace(d.name);
+			      },
+			      queryTokenizer: Bloodhound.tokenizers.whitespace,
+			      prefetch: { 
+			                url: '/query',
+					filter: function(data){
+					return data.content;
+					},
+					},
+			});
+
+			numbers.initialize();
+
+			$('input.search-lineedit').typeahead( {
+			    highlight: true
+			    },
+			    {
+			    name: 'name',
+			    displayKey: 'name',
+			    source: numbers.ttAdapter(),	
+			    templates: {
+				suggestion: function(data){
+				        console.log(data)	
+					return '<div>'+
+					'<img class=suggestion-pic width=50 height=50 src='+{% static "."%}+ data.avatar  +'>'+
+						    '<div class=suggestion-name>'+ '<p>'+ data.name + '</p>'+'</div>'+
+						    '<div class=suggestion-department>'+ '<p >'+ data.department.toLowerCase() + '</p>'+'</div>'+
+					       '</div>';	
+					}	
+					
+	    			}
+			    });
+		
 				 
 		})
 
 			$(".client-id").each(function(){
 					$(this).hide();
 				})
+
                 var map;
 		$(function(){
 			setNavigation();	
@@ -159,34 +208,19 @@
                         })
 
 
+
 		 $(".client-list").hover(
 			 function(){
-			            var highlight  = $(this).children(".highlight-rib") 
-			            var name_title = $(this).children(".client-name")
-				    var box        = $(this).children(".list-image-container")
-				    name_title.css("color", highlight.css("background-color"));
-			            highlight.fadeIn(100);
-				    box.addClass('shadow')
+			            var name_title = $(this).children(".client-name");
+				    var emp_status = $(this).children(".date-added");
+				    name_title.addClass('whiten');
+				    emp_status.addClass('whiten');
 				   }, 
 			 function(){
-			            $(this).children(".highlight-rib").fadeOut(100)
-				    $(this).children(".client-name").css("color", "#000")  
-				    $(this).children(".list-image-container").removeClass('shadow')
-				   }
-		 )
-		 $(".alert-list").hover(
-			 function(){
-			            var highlight  = $(this).children(".highlight-rib") 
-			            var name_title = $(this).children(".device-number")
-				    var box        = $(this).children(".image-list")
-				    name_title.css("color", highlight.css("background-color"));
-			            highlight.fadeIn(100);
-				    box.addClass('shadow')
-				   }, 
-			 function(){
-			            $(this).children(".highlight-rib").fadeOut(100)
-				    $(this).children(".device-number").css("color", "#000")  
-				    $(this).children(".image-list").removeClass('shadow')
+			            var name_title = $(this).children(".client-name");
+				    var emp_status = $(this).children(".date-added");
+				    name_title.removeClass('whiten');
+				    emp_status.removeClass('whiten');
 				   }
 		 )
 
@@ -198,7 +232,25 @@
 				        $(this).css("background", "#3298DB") 
 				        }
 				 
-				 )
+				 );
+
+	         var menu = $(".options-dropdown");	
+		 $("#gear").click(function(){
+				       menu.slideToggle(); 
+				 });
+		$("#options-menu").children("li").hover(
+				function(){
+					$(this).children('a').css("color", "#3498DB");
+				},
+				function(){
+			                $(this).children('a').css("color", "#ffffff");	
+				}
+				)
+
+		$(document).mouseup(function(){
+	                menu.hide();	
+			})
+
 		 $(function(){
 		     place_markers();  
 		 })

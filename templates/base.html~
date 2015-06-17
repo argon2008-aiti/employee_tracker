@@ -7,6 +7,7 @@
 	<title>Volta Aluminium Company </title>
 	<link rel="stylesheet" type="text/css" href={% static "assets/css/bootstrap.min.css"%}>
         <link rel="stylesheet" type="text/css" href={% static "assets/css/main.css"%}>
+        <link rel="stylesheet" type="text/css" href={% static "assets/css/leaflet.vector-markers.css"%}>
         <link rel="stylesheet" type="text/css" href={% static "assets/fonts/font-awesome-4.2.0/css/font-awesome.min.css"%}>
         <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
 	   
@@ -45,10 +46,10 @@
 	    <hr class=divider id=banner-divider>
             <ul class="nav-list">
 		    <li class="list-item"><a href="/monitor">Monitor</a></li>
-		    <li class="list-item"><a href="/clients">History</a></li>
+		    <li class="list-item"><a href="/clients">Logs</a></li>
 	    </ul>
 	    <form class=search-box>
-	           <input class=search-lineedit type="text" placeholder="Search..." required> 
+	           <input class=typeahead type="text" name="search-box" placeholder="Search..." required> 
 	           <input type="submit" value="Search" class=search-button> 
 	    </form>
         </div>
@@ -64,12 +65,13 @@
 			{% for employee in employees_odd %}
 			<div class="client-list">	
 				<div class=list-image-container>
-					<i class="fa fa-dollar"></i> 	
+					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=90px height=80px> </img>
 				</div>
+				<p class=client-id>{{employee.id}}</p>
 				<p class=client-name>{{employee.first_name}}  {{employee.last_name}}</p>
-				<p class=client-address>current location: {{client.address}}</p>
-				<p class=cylinder-count> : {{client.cylinder_set.count}}</p>
-				<p class=date-added>status: {{client.date_added}}</p>
+				<p class=client-address>current location: {{employee.current_location}}</p>
+				<p class=cylinder-count> Department: {{employee.get_department_display|truncatechars:20}}</p>
+				<p class=date-added>{{employee.location_device.status_str}}</p>
 
 			</div>
 				{% endfor %}
@@ -78,12 +80,13 @@
 			{%for employee in employees_even%}
 			<div class="client-list">
 				<div class=list-image-container>
-					<i class="fa fa-dollar"></i> 	
+					<img class= profile-pic src={% static employee.avatar.url %} alt="" width=90px height=80px> </img>
 				</div>
+				<p class=client-id>{{employee.id}}</p>
 				<p class=client-name>{{employee.first_name}}  {{employee.last_name}}</p>
-				<p class=client-address>current location: {{client.address}}</p>
-				<p class=cylinder-count> : {{client.cylinder_set.count}}</p>
-				<p class=date-added>status: {{client.date_added}}</p>
+				<p class=client-address>current location: {{employee.current_location}}</p>
+				<p class=cylinder-count> Department: {{employee.get_department_display|truncatechars:20}}</p>
+				<p class=date-added>{{employee.location_device.status_str}}</p>
 			</div>
 			{% endfor %}
 	</div>
@@ -103,6 +106,8 @@
        <script type="text/javascript" src = {% static "assets/js/bootstrap.min.js"%}></script>
        <script type="text/javascript" src = {% static "assets/js/overlay.geojson"%}></script>
        <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+       <script type="text/javascript" src = {% static "assets/js/leaflet.vector-markers.js"%}></script>
+       <script type="text/javascript" src = {% static "assets/js/typeahead.bundle.js"%}></script>
 
        <script>
 	$(document).ready(function(){
@@ -111,33 +116,46 @@
 		var colors = ['#99B433', '#00A300', '#1E7145', '#FF0097', '#9F00A7',
 			  '#7E3878', '#603CBA', '#00ABA9', '#2D89EF', '#2B5797',
 			  '#FFC40D', '#E3A21A', '#DA532C', '#EE1111', '#B91D47',
-			 ]
+			 ];
 	        var counter = 0;
 		var index_old = 0;
 			 $(".list-image-container").each(function(){
 				var index =  Math.floor(Math.random()*15);
-				if((counter != 0) && (index_old==index)){
-					while(index_old==index){
+				if((counter != 0) && (index_old===index)){
+					while(index_old===index){
 					    index = Math.floor(Math.random()*15);
-					    console.log("same")
 					}	
 				}	
 				$(this).css("background-color", colors[index]) 
 				$(this).siblings(".highlight-rib").css("background-color", colors[index]).hide();
 				index_old = index;
 				counter++;
-				} )
+				});
+
+
+
+			$("input.typeahead").typeahead({
+				name: 'search',
+				local: ['Kofi', 'Mensah', 'Kwame']
+				});
 
 				 
 		})
+
+			$(".client-id").each(function(){
+					$(this).hide();
+				})
+
+                var map;
 		$(function(){
 			setNavigation();	
 			accessToken = 'pk.eyJ1IjoieXVuZ3V0YSIsImEiOiJILVdtQ1pRIn0.FmyLN0Igsi5NGFQqWu4oWg';
-			var map = L.map('map').setView([5.667, 0.019], 13);
+			map = L.map('map').setView([5.667, 0.019], 17);
+			//L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:17}).addTo(map);
 			L.tileLayer('http://{s}.tiles.mapbox.com/v4/yunguta.m3987de7/{z}/{x}/{y}.png?access_token=' + accessToken, {
 			attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>',
 			     maxZoom: 17}).addTo(map);
-			L.geoJson(overlay).addTo(map);
+
 			})
 
 		$(window).scroll(function(){
@@ -149,21 +167,7 @@
 			}
                         })
 
-		function convertDMS( lat, lng ) {
-		 
-			var convertLat = Math.abs(lat);
-			var LatDeg = Math.floor(convertLat);
-			var LatSec = (Math.floor((convertLat - LatDeg) * 60));
-			var LatCardinal = ((lat > 0) ? "N" : "S");
-			 
-			var convertLng = Math.abs(lng);
-			var LngDeg = Math.floor(convertLng);
-			var LngSec = (Math.floor((convertLng - LngDeg) * 60));
-			var LngCardinal = ((lng > 0) ? "E" : "W");
-			 
-			return LatDeg + LatCardinal + LatSec  + "<br />" + LngDeg + LngCardinal + LngSec;
-		}
-		
+
 
 		 $(".client-list").hover(
 			 function(){
@@ -205,6 +209,9 @@
 				        }
 				 
 				 )
+		 $(function(){
+		     place_markers();  
+		 })
 
 		 function setNavigation(){
 			 var path = window.location.pathname;
@@ -218,6 +225,110 @@
 					}
 					 })
 		 }
+                 
+		var onlineMarker = L.VectorMarkers.icon({
+			icon: 'spinner',	
+			markerColor: '#2880CA',
+			spin:	true
+		}); 
+
+
+		var offlineMarker = L.VectorMarkers.icon({
+			icon: 'circle',	
+			markerColor: '#C4C4C4',
+		}); 
+		
+		var alarmMarker = L.VectorMarkers.icon({
+			icon: 'spinner',	
+			markerColor: 'red',
+			spin:	true
+		}); 
+		var marker_array = [];
+		
+		function place_markers() {
+			$.get("/fetch/", function(data, status){
+				input = data.content;	
+				var marker_icon;
+				for(var i=0;i<input.length;i++){
+					if(input[i].status==='ONLINE'){
+					    marker_icon = onlineMarker;	
+					}
+					else{
+					    marker_icon = offlineMarker;	
+					}
+
+					var url;
+					$(".client-id").each(function(){
+							if(input[i].employee===parseInt($(this).html())){
+							    url = $(this).siblings(".list-image-container").children("img").attr('src');
+							    name = $(this).siblings(".client-name").html();
+							}
+						});
+
+					var popup  = "<img class=pop-pic src=" + url + " width=40 height=40/> <p class=pop-text>"+name+"</p>";
+				var marker = L.marker([input[i].coordinates[1], input[i].coordinates[0]], 
+					        {icon: marker_icon},
+					        {title: 'Hover'})
+						.bindPopup(popup)
+						.addTo(map);
+			            var obj = {
+				               'key': input[i].pk, 
+					       'status': input[i].status,
+					       'marker': marker,
+				    };	
+				
+				    marker_array.push(obj);
+				}
+					}, 'json');
+
+
+		}
+		setInterval(function(){
+				$.get("/fetch/", function(data, status){
+					input = data.content;
+					var marker_icon;
+					for(var i =0; i < input.length; i++) {
+						for(var j=0; j<input.length; j++) {
+						        // we have found our marker
+							if(marker_array[j].key===input[i].pk) {
+								if(input[i].status==='ONLINE'){
+								    marker_icon = onlineMarker;	
+								    if(input[i].alarm){
+								        marker_icon = alarmMarker; 
+								    }
+								}
+
+								else if(input[i].status==='OFFLINE'){
+								    marker_icon = offlineMarker;	
+								}
+								
+						            marker_array[j].marker.setLatLng([input[i].coordinates[1], input[i].coordinates[0]])
+							    .setIcon(marker_icon)
+							    .update();	
+							}
+						}	
+
+					$(".client-id").each(function(){
+							if(input[i].employee===parseInt($(this).html())){
+							    var obj = $(this).siblings(".date-added");
+						            obj.html(input[i].status);	
+							    if(obj.html()==='OFFLINE'){
+							        obj.removeClass("online"); 
+							        obj.addClass("offline"); 
+							    }	
+							    else {
+							        obj.removeClass("offline"); 
+							        obj.addClass("online"); 
+
+							    }
+							    
+							}
+							
+							});
+					}
+					},'json');
+		
+		}, 6000)
 
        </script>
 </body>

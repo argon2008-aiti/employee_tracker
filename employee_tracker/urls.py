@@ -13,8 +13,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^monitor/', 'monitor.views.monitor', name='monitor'),
     url(r'^login/', 'monitor.views.login', name='login'),
+    url(r'^logout/', 'monitor.views.logout', name='logout'),
     url(r'^mobile-request/', 'monitor.views.mobile', name='mobile'),
     url(r'^fetch/', 'monitor.views.fetch', name='fetch'),
+    url(r'^query', 'monitor.views.query', name='query'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

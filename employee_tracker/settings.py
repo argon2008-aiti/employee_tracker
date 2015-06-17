@@ -90,10 +90,10 @@ STATICFILES_DIRS = (
         )
 
 # base url at which static files are served
-STATIC_URL = '/static/'
+STATIC_URL = '/assets/'
+STATIC_ROOT = os.path.join(BASE_DIR,'assets')
 
 LOGIN_URL  = '/login'
-
 
 STATICFILES_FINDERS = (
             'django.contrib.staticfiles.finders.FileSystemFinder',
