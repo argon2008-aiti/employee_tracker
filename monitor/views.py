@@ -63,7 +63,7 @@ def query(request):
     entries = []
     for employee in employees:
         entries.append(dict({'name': employee.first_name + " "+ employee.last_name, \
-                'department': employee.get_department_display(), 'avatar': employee.avatar.url}))
+                'department': employee.get_department_display(), 'avatar': employee.avatar.url, 'pk': employee.pk}))
     print entries
     return entries
      

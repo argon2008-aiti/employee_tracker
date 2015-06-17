@@ -121,6 +121,9 @@
 	$(document).ready(function(){
 		$(".alert-list").children(".highlight-rib").hide();
 		$(".options-dropdown").hide();
+		$(".client-id").each(function(){
+				$(this).hide();
+			})
 		var colors = ['#99B433', '#00A300', '#1E7145', '#FF0097', '#9F00A7',
 			  '#7E3878', '#603CBA', '#00ABA9', '#2D89EF', '#2B5797',
 			  '#FFC40D', '#E3A21A', '#DA532C', '#EE1111', '#B91D47',
@@ -168,7 +171,6 @@
 			    source: numbers.ttAdapter(),	
 			    templates: {
 				suggestion: function(data){
-				        console.log(data)	
 					return '<div>'+
 					'<img class=suggestion-pic width=50 height=50 src='+{% static "."%}+ data.avatar  +'>'+
 						    '<div class=suggestion-name>'+ '<p>'+ data.name + '</p>'+'</div>'+
@@ -177,14 +179,23 @@
 					}	
 					
 	    			}
-			    });
+				}).on('typeahead:autocompleted', function($e, datum){console.log(datum.pk);})
+				  .on('typeahead:selected', function($e, datum){locateMarker(marker_array, datum.pk);});
 		
 				 
 		})
 
-			$(".client-id").each(function(){
-					$(this).hide();
-				})
+
+		function locateMarker(markerArray, id){
+			for(var i=0; i<markerArray.length; i++) {
+				if(markerArray[i].employee===id) {
+			           var marker =  markerArray[i].marker;	
+				   map.panTo(marker.getLatLng());
+				}	
+			
+			}
+                    
+		}
 
                 var map;
 		$(function(){
@@ -222,7 +233,11 @@
 				    name_title.removeClass('whiten');
 				    emp_status.removeClass('whiten');
 				   }
-		 )
+				 ).click(function(){
+					var id = $(this).children(".client-id").html();
+					console.log(id);
+					locateMarker(marker_array, parseInt(id));
+					 });
 
 		 $(".search-button").hover(
 				 function(){
@@ -317,6 +332,7 @@
 				               'key': input[i].pk, 
 					       'status': input[i].status,
 					       'marker': marker,
+					       'employee': input[i].employee
 				    };	
 				
 				    marker_array.push(obj);
