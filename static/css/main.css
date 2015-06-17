@@ -209,6 +209,11 @@ body {
    color: #999;
 }
 
+.empty {
+    padding-left: 10px;
+    padding-top: 5px;
+}
+
 .search-button {
    position: relative;
    padding: 2px;

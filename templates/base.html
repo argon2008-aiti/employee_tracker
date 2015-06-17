@@ -53,7 +53,7 @@
 	    <hr class=divider id=banner-divider>
             <ul class="nav-list">
 		    <li class="list-item"><a href="/monitor">Monitor</a></li>
-		    <li class="list-item"><a href="/logs">Logs</a></li>
+		    <li class="list-item"><a href=#>Logs</a></li>
 	    </ul>
 	    <form class=search-box>
 	           <input class="search-lineedit" type="text" name="search-box" placeholder="Search..." required> 
@@ -124,6 +124,7 @@
 		$(".client-id").each(function(){
 				$(this).hide();
 			})
+		localStorage.clear();
 		var colors = ['#99B433', '#00A300', '#1E7145', '#FF0097', '#9F00A7',
 			  '#7E3878', '#603CBA', '#00ABA9', '#2D89EF', '#2B5797',
 			  '#FFC40D', '#E3A21A', '#DA532C', '#EE1111', '#B91D47',
@@ -176,7 +177,12 @@
 						    '<div class=suggestion-name>'+ '<p>'+ data.name + '</p>'+'</div>'+
 						    '<div class=suggestion-department>'+ '<p >'+ data.department.toLowerCase() + '</p>'+'</div>'+
 					       '</div>';	
-					}	
+					},	
+				empty:  function(data){
+			                return '<div class=empty>'+
+						'<p>No Match Found</p>' +
+					'</div>';	
+					}
 					
 	    			}
 				}).on('typeahead:autocompleted', function($e, datum){console.log(datum.pk);})
@@ -190,7 +196,12 @@
 			for(var i=0; i<markerArray.length; i++) {
 				if(markerArray[i].employee===id) {
 			           var marker =  markerArray[i].marker;	
+				   $('html, body').animate({
+			                scrollTop: $("#map").offset().top
+					}, 500).promise().done(function(){
 				   map.panTo(marker.getLatLng());
+				   marker.openPopup();
+						});
 				}	
 			
 			}
@@ -353,6 +364,7 @@
 								    marker_icon = onlineMarker;	
 								    if(input[i].alarm){
 								        marker_icon = alarmMarker; 
+									locateMarker(marker_array, input[i].pk)
 								    }
 								}
 
