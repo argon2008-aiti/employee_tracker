@@ -197,7 +197,7 @@
 				if(markerArray[i].employee===id) {
 			           var marker =  markerArray[i].marker;	
 				   $('html, body').animate({
-			                scrollTop: $("#map").offset().top
+			                scrollTop: $("#map").offset().top-40
 					}, 500).promise().done(function(){
 				   map.panTo(marker.getLatLng());
 				   marker.openPopup();
