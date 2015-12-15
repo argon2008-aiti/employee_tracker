@@ -41,7 +41,6 @@ INSTALLED_APPS = (
     'leaflet',
     'djgeojson',
     'django_ajax',
-    'django_extensions',
 )
 
 MIDDLEWARE_CLASSES = (
