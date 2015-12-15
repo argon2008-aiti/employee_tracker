@@ -297,7 +297,7 @@ body {
     padding-left: 30px;
 }
 
-.client_container, .alerts_container {
+.employee_container, .alerts_container {
     color: black;
     line-height: 2;
     margin-top: 30px;
@@ -501,14 +501,14 @@ login-form{
     font-family: open-sans;
 }
 
-.client-list, .alert-list {
+.employee-list, .alert-list {
     height: 90px;
     border-top: 4px solid #999;
     border-bottom: 1px solid #BBB;
     margin: 20px 0px 20px 0px;
 }
 
-.client-list p {
+.employee-list p {
     line-height: 10px;
     padding-top: 10px;
     margin-left: 100px;
@@ -548,7 +548,7 @@ login-form{
     margin-left: 975px;
 }
 
-.client-name {
+.employee-name {
     font-family: open-sans-regular;
     font-size: 20px;
 }
@@ -621,7 +621,7 @@ login-form{
     font-family: open-sans;
 }
 
-.cylinder-count {
+.department {
     font-family: open-sans-regular;
 }
 
