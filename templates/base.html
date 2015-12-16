@@ -116,6 +116,7 @@
        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/hogan.js/2.0.0/hogan.js"></script>
        <script type="text/javascript" src = {% static "assets/js/leaflet.vector-markers.js"%}></script>
        <script type="text/javascript" src = {% static "assets/js/typeahead.bundle.js"%}></script>
+       <script type="text/javascript" src = {% static "assets/js/jquery.playSound.js"%}></script>
 
        <script>
 	$(document).ready(function(){
@@ -191,7 +192,6 @@
 				 
 		})
 
-
 		function locateMarker(markerArray, id){
 			for(var i=0; i<markerArray.length; i++) {
 				if(markerArray[i].employee===id) {
@@ -231,7 +231,7 @@
 
 
 
-		 $(".client-list").hover(
+		 $(".employee-list").hover(
 			 function(){
 			            var name_title = $(this).children(".employee-name");
 				    var emp_status = $(this).children(".date-added");
@@ -352,6 +352,59 @@
 
 
 		}
+
+
+		function ddToDms(lat, lng) {
+
+		   var lat = lat;
+		   var lng = lng;
+		   var latResult, lngResult, dmsResult;
+
+		   lat = parseFloat(lat);  
+		   lng = parseFloat(lng);
+
+
+		   // Call to getDms(lat) function for the coordinates of Latitude in DMS.
+		   // The result is stored in latResult variable.
+		   latResult = getDms(lat);
+
+		   latResult += (lat >= 0)? 'N' : 'S';
+
+		   lngResult = getDms(lng);
+
+		   lngResult += (lng >= 0)? 'E' : 'W';
+
+		   // Call to getDms(lng) function for the coordinates of Longitude in DMS.
+		   // The result is stored in lngResult variable.
+
+		   // Joining both variables and separate them with a space.
+		   dmsResult = latResult + ', ' + lngResult;
+
+		   // Return the resultant string
+		   return dmsResult;
+		}
+
+
+
+		function getDms(val) {
+
+		  var valDeg, valMin, valSec, result;
+
+		  val = Math.abs(val);
+
+		  valDeg = Math.floor(val);
+		  result = valDeg + "º ";
+
+		  valMin = Math.floor((val - valDeg) * 60);
+		  result += valMin + "' ";
+		  
+		    valSec = Math.round((val - valDeg - valMin / 60) * 3600 * 1000) / 1000;
+		      result += valSec + '" ';
+		      
+			return result;
+		}
+
+
 		setInterval(function(){
 				$.get("/fetch/", function(data, status){
 					input = data.content;
@@ -365,6 +418,7 @@
 								    if(input[i].alarm){
 								        marker_icon = alarmMarker; 
 									locateMarker(marker_array, input[i].pk)
+									$.playSound("{% static "assets/sound/alarm"%}");
 								    }
 								}
 
@@ -392,8 +446,10 @@
 
 							    }
 							    
+							$(this).siblings(".client-address").html("current location: " + 
+								ddToDms(input[i].coordinates[1], input[i].coordinates[0]))	
 							}
-							
+
 							});
 					}
 					},'json');
