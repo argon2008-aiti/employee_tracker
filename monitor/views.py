@@ -15,13 +15,9 @@ def monitor(request):
 
     employees = Employee.objects.all()
 
-    employees_even = [ employee for employee in employees 
-	            if employee.id%2==0 
-	    ]
+    employees_even = [ employee for employee in employees if employee.id%2==0 ]
 
-    employees_odd =  [ employee for employee in employees 
-	            if employee.id%2!=0 
-	    ]
+    employees_odd =  [ employee for employee in employees if employee.id%2!=0 ]
 
     return render_to_response('base.html', locals())
 
